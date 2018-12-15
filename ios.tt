@@ -1,0 +1,53 @@
+<#
+fn print_key(f: &mut fmt::Formatter, key: &Key, baseKey: &Fn(&Key) -> &str, shiftKey: &Fn(&Key) -> &str, numPadKey: bool) -> fmt::Result {
+  #>[<#= baseKey(key)#>:<#= baseKey(key) #>:<# if numPadKey { #>#012763:<# } #>{<#= shiftKey(key) #>:<#= shiftKey(key)#><# if numPadKey { #>:#012763<# } #>}],<#
+  Ok(())
+}
+
+fn gen_one_layer(f: &mut fmt::Formatter, keys: &[Key], baseKey: &Fn(&Key) -> &str, shiftKey: &Fn(&Key) -> &str) -> fmt::Result {
+    const layer1: &[usize] = &[13, 14, 15, 16, 17, 18, 2, 10, 1, 11, 19, 20, 21, 22, 23, 24];
+    for &l1 in layer1 {
+      if l1 <= 11 {
+        print_key(f, &keys[l1], baseKey, shiftKey, true);
+      } else {
+        print_key(f, &keys[l1], baseKey, shiftKey, false);
+      }
+    }
+    #>|
+<#
+    const layer2: &[usize] = &[25, 26, 27, 28, 29, 30, 4, 8, 3, 9, 31, 32, 33, 34, 35, 36];
+    for &l2 in layer2 {
+      if l2 <= 11 {
+        print_key(f, &keys[l2], baseKey, shiftKey, true);
+      } else {
+        print_key(f, &keys[l2], baseKey, shiftKey, false);
+      }
+    }
+    #>|
+<#
+    const layer3: &[usize] = &[37, 38, 39, 40, 41, 42, 5, 7, 6, 0, 12, 43, 44, 45, 46, 47];
+    for &l3 in layer3 {
+      if l3 <= 11 {
+        print_key(f, &keys[l3], baseKey, shiftKey, true);
+      } else {
+        print_key(f, &keys[l3], baseKey, shiftKey, false);
+      }
+    }
+    #>|
+[shift:&shift], [123:&123:s100], [switch:&switch:s100], [space:&space:s600], [del:&del:&rptn], [return:&return]
+<#
+    Ok(())
+}
+#>
+<#
+gen_one_layer(f, &self.keys, &(|key: &Key| &key.normal), &(|key: &Key| &key.shift));
+#>##
+<#
+gen_one_layer(f, &self.keys, &(|key: &Key| &key.alt), &(|key: &Key| &key.alt_shift));
+#>##
+<#
+gen_one_layer(f, &self.keys, &(|key: &Key| &key.math), &(|key: &Key| &key.math_shift));
+#>##
+<#
+gen_one_layer(f, &self.keys, &(|key: &Key| &key.math_alt), &(|key: &Key| &key.math_alt_shift));
+#>
